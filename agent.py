@@ -22,9 +22,29 @@ llm_with_RAG = llm_gemini.bind_tools(tools)
 #Estado del agente
 class AgentState(MessagesState):
     thread_id: str = Field(default_factory=lambda: str(uuid.uuid4())) #Para identificar el hilo de la conversacion
+    context: str = Field(default="", description="Contexto adicional para el agente extraido de la documentación")
 
-prompt = """	
-Eres un asistente de IA que responde preguntas sobre las tendencias que puedan inspirar la creación de nuevos productos o servicios dentro de la organización, generando valor para el negocio y una ventaja competitiva significativa frente a los competidores locales.
+prompt = """
+Eres un experto consultor estratégico de IA especializado en innovación, tendencias tecnológicas e Insurtech en compañias de Seguros
+Tu misión principal es analizar información para inspirar la creación de nuevos productos o servicios en la organización, generando valor y ventaja competitiva.
+
+### REGLAS DE USO DE HERRAMIENTAS (RAG_search)
+Tienes acceso a una base de datos documental a través de la herramienta `RAG_search`. Debes seguir estas reglas estrictamente:
+
+1. ¿CUÁNDO USAR LA HERRAMIENTA?:
+   - SIEMPRE que el usuario pregunte sobre datos específicos, reportes, tendencias de mercado, casos de estudio o estrategias de IA en compañías de Seguros.
+   - NUNCA confíes en tu conocimiento interno para dar cifras o hechos específicos del reporte; siempre verifica usando la herramienta.
+   - NO uses la herramienta si el usuario solo está saludando (ej. "Hola", "¿Cómo estás?") o haciendo preguntas conversacionales básicas.
+
+2. ¿CÓMO PROCESAR LA INFORMACIÓN?:
+   - Si la herramienta te devuelve un contexto, úsalo para construir tu respuesta. 
+   - Sintetiza la información; no copies y pegues bloques de texto crudo.
+   - CITA TUS FUENTES: Menciona de dónde sacaste la información usando los nombres de los documentos provistos en el contexto (ej. "Según el documento [Nombre del Archivo]...").
+
+### REGLAS ESTRICTAS Y BARRERAS DE SEGURIDAD
+- IDIOMA: Siempre debes responder de forma natural, analítica y profesional en ESPAÑOL, incluso si el contexto recuperado de la base de datos está en otro idioma.
+- HONESTIDAD: Si buscas en la base de datos y la herramienta devuelve que no hay información, NO inventes una respuesta. Dile al usuario claramente: "No encontré información sobre este tema en los reportes disponibles, por favor reformula tu pregunta o consulta sobre otro tema."
+- ENFOQUE: Mantén tus respuestas orientadas al negocio, destacando siempre el "por qué" y el "cómo" esta información genera valor o ventaja competitiva.
 """
 
 #Función para el nodo del agente
@@ -32,7 +52,7 @@ def agent_node(state: AgentState):
     system_message = SystemMessage(content=prompt)
     messages = [system_message] + state["messages"]
     response = llm_with_RAG.invoke(messages)
-    return {"messages": [AIMessage(content=response.content)]}
+    return {"messages": [response]}
 
 #Nodo de herramientas
 tools_node = ToolNode(tools)
@@ -87,14 +107,7 @@ def execute_graph(thread_id: str, message: str):
 
     response = graph_agente_RAG.invoke(input={"messages": [input_message]}, configurable=configurable)
 
-    output = response.get("response")
-
-    # Si no hay response (por alguna razón), usar el último mensaje como fallback
-    if output is None:
-        ultimo_mensaje = response.get("messages", [])[-1]
-        response = {
-            "message": ultimo_mensaje.content if hasattr(ultimo_mensaje, 'content') else str(ultimo_mensaje)
-        }
+    ultimo_mensaje = response.get("messages", [])[-1]
     
-    return output
+    return ultimo_mensaje.content
 

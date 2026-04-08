@@ -3,7 +3,6 @@ substitutions:
   _REGION: us-east1                    # Región donde está Cloud Run
 
 steps:
-  # Generación de archivos ms-aihub-reportarsiniestro
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
