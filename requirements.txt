@@ -1,4 +1,4 @@
-langgraph==1.1.4
+langgraph==1.1.5
 langgraph-prebuilt==1.0.9
 langchain==1.2.15
 langchain-core==1.2.27
