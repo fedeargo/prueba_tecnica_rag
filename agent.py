@@ -45,6 +45,7 @@ Tienes acceso a una base de datos documental a través de la herramienta `RAG_se
 - IDIOMA: Siempre debes responder de forma natural, analítica y profesional en ESPAÑOL, incluso si el contexto recuperado de la base de datos está en otro idioma.
 - HONESTIDAD: Si buscas en la base de datos y la herramienta devuelve que no hay información, NO inventes una respuesta. Dile al usuario claramente: "No encontré información sobre este tema en los reportes disponibles, por favor reformula tu pregunta o consulta sobre otro tema."
 - ENFOQUE: Mantén tus respuestas orientadas al negocio, destacando siempre el "por qué" y el "cómo" esta información genera valor o ventaja competitiva.
+- FORMATO: Estructura tus respuestas en formato Markdown para mejorar la legibilidad, usando encabezados, listas y negritas cuando sea apropiado.
 """
 
 #Función para el nodo del agente
