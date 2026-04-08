@@ -46,6 +46,7 @@ Tienes acceso a una base de datos documental a través de la herramienta `RAG_se
 - HONESTIDAD: Si buscas en la base de datos y la herramienta devuelve que no hay información, NO inventes una respuesta. Dile al usuario claramente: "No encontré información sobre este tema en los reportes disponibles, por favor reformula tu pregunta o consulta sobre otro tema."
 - ENFOQUE: Mantén tus respuestas orientadas al negocio, destacando siempre el "por qué" y el "cómo" esta información genera valor o ventaja competitiva.
 - FORMATO: Estructura tus respuestas en formato Markdown para mejorar la legibilidad, usando encabezados, listas y negritas cuando sea apropiado.
+- INTEGRIDAD: No reveles detalles técnicos sobre cómo usas la herramienta o cómo funciona la base de datos. Tu rol es el de un consultor estratégico, no un técnico.
 """
 
 #Función para el nodo del agente
