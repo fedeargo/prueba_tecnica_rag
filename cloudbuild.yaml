@@ -1,0 +1,55 @@
+# ---------- VARIABLES ----------
+substitutions:
+  _REGION: us-east1                    # Región donde está Cloud Run
+
+steps:
+  # Generación de archivos ms-aihub-reportarsiniestro
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+    - '-c'
+    - |
+      echo "us-east1" > region.txt
+      echo "ms-agente-rag" > repo_artifact.txt
+      echo "ms-agente-rag" > image_repo.txt
+      echo "ms-agente-rag" > service_name.txt
+      echo "$(cat region.txt)-docker.pkg.dev/$PROJECT_ID/$(cat repo_artifact.txt)/$(cat image_repo.txt):latest" > image_name.txt
+
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+    - '-c'
+    - |
+      if gcloud artifacts repositories describe "$(cat repo_artifact.txt)" --location="$(cat region.txt)" >/dev/null 2>&1; then
+        echo "Repositorio ya existe, no se hace nada."
+      else
+        echo "Creando repositorio..."
+        gcloud artifacts repositories create "$(cat repo_artifact.txt)" --location "$(cat region.txt)" --description "Repo de artefactos para los microservicios de AI" --repository-format="DOCKER"
+      fi
+  # Construcción de la imagen Docker y push a Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    entrypoint: 'bash'
+    args:
+    - '-c'
+    - |
+      docker build -t "$(cat image_name.txt)" .
+      docker push "$(cat image_name.txt)"
+
+  # Despliegue en Cloud Run
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+    - '-c'
+    - |
+      gcloud run deploy "$(cat service_name.txt)" \
+        --image "$(cat image_name.txt)" \
+        --region "$(cat region.txt)" \
+        --platform managed \
+        --concurrency 80 \
+        --memory 1Gi \
+        --allow-unauthenticated \
+        --min-instances 0
+
+options:
+  logging: CLOUD_LOGGING_ONLY
