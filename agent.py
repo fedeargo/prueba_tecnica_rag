@@ -105,7 +105,7 @@ def execute_graph(thread_id: str, message: str):
         "configurable": {"thread_id": thread_id}
     }
 
-    response = graph_agente_RAG.invoke(input={"messages": [input_message]}, configurable=configurable)
+    response = graph_agente_RAG.invoke(input={"messages": [input_message]}, config=configurable)
 
     ultimo_mensaje = response.get("messages", [])[-1]
     
