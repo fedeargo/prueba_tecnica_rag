@@ -91,7 +91,7 @@ builder_agente_RAG.add_conditional_edges(
     )
 
 #Checkpoint
-checkpoint_saver = FirestoreSaver(database="agente-rag-db", collection_name="checkpoints", pw_collection_name="checkpoint_writes")
+checkpoint_saver = FirestoreSaver(database="(default)", collection_name="checkpoints", pw_collection_name="checkpoint_writes")
 
 #Compilacion del grafo
 graph_agente_RAG = builder_agente_RAG.compile(checkpointer=checkpoint_saver)
